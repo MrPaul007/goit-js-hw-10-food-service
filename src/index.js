@@ -1,26 +1,32 @@
 import './styles.css';
-import menu from './menu.json';
-import itemsTemplate from './gallery-items.hbs';
+import menuData from './menu.json';
+import menuTempl  from './gallery-items.hbs';
 
-const menuRef = document.querySelector('.js-menu');
-
-const markup = itemsTemplate(menu);
-menuRef.insertAdjacentHTML('beforeend', markup);
+const refs = {
+  menu: document.querySelector('.js-menu'),
+  themeSwitchToggle: document.querySelector('#theme-switch-toggle'),
+  body: document.body,
+};
 
 const Theme = {
-    LIGHT: 'light-theme',
-    DARK: 'dark-theme',
-  };
+  LIGHT: 'light-theme',
+  DARK: 'dark-theme',
+};
 
-  const checkbox = document.querySelector("input[name=theme]");
-  const bodyEl = document.querySelector("body");
-  const bodyTheme = 
-  checkbox.addEventListener('change', function() {
-    if (this.checked) {
-        bodyEl.classList.remove(Theme.LIGHT)
-        bodyEl.classList.add(Theme.DARK)
-    } else {
-        bodyEl.classList.remove(Theme.DARK)
-        bodyEl.classList.add(Theme.LIGHT)
-    }
-  });
+refs.menu.innerHTML = menuTempl(menuData);
+
+let localTheme = localStorage.getItem('theme');
+if (!Object.values(Theme).includes(localTheme)) localTheme = Theme.LIGHT;
+refs.body.classList.add(localTheme);
+refs.themeSwitchToggle.checked = localTheme === Theme.DARK;
+
+refs.themeSwitchToggle.addEventListener('change', onThemeSwitch);
+
+function onThemeSwitch(e) {
+  refs.body.classList.toggle(Theme.LIGHT);
+  refs.body.classList.toggle(Theme.DARK);
+  localStorage.setItem(
+    'theme',
+    e.currentTarget.checked ? Theme.DARK : Theme.LIGHT,
+  );
+}
